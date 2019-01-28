@@ -1,3 +1,4 @@
-/foo    https://example.com
+/cli   https://example.com/from-cli
+/foo   https://example.com
 
-/* https://friday-challenge.com
+/*     https://friday-challenge.com

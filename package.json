@@ -4,7 +4,7 @@
   "description": "track clicks",
   "main": "index.js",
   "scripts": {
-    "shorten": "netlify shortener"
+    "shorten": "netlify-shortener"
   },
   "repository": {
     "type": "git",
