@@ -2,3 +2,4 @@
   command = "yarn build"
   functions = "lambda"
   publish = "build"
+  REACT_APP_AIRTABLE_API="keyS8QIU3qxAHyvy4"

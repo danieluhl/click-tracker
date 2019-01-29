@@ -2,19 +2,36 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+const ENDPOINTS = {
+  addUrls: 'add-urls',
+  trackClick: 'track-click'
+};
 class LambdaDemo extends Component {
   constructor(props) {
     super(props);
     this.state = { loading: false, msg: null };
   }
 
-  handleClick = api => e => {
+  createHandleClick = (api, data) => e => {
     e.preventDefault();
 
     this.setState({ loading: true });
-    fetch('/.netlify/functions/' + api)
-      .then(response => response.json())
-      .then(json => this.setState({ loading: false, msg: json.msg }));
+    fetch(`/.netlify/functions/${api}`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+      .then(response => {
+        console.log(response);
+        return response.json();
+      })
+      .then(json => this.setState({ loading: false, msg: json.toUrl }));
+  };
+
+  createHandleClickAddUrls = () => {
+    const data = {
+      newUrls: ['https://test.com', 'https://app.netlify.com/', 'https://github.com', 'https://mail.google.com']
+    };
+    return this.createHandleClick(ENDPOINTS.addUrls, data);
   };
 
   render() {
@@ -22,12 +39,12 @@ class LambdaDemo extends Component {
 
     return (
       <p>
-        <button onClick={this.handleClick('hello')}>
-          {loading ? 'Loading...' : 'Call Lambda'}
+        <button
+          onClick={this.createHandleClick(ENDPOINTS.trackClick, { fromUrl: 'bingo', toUrl: 'https://wayfair.com' })}
+        >
+          {loading ? 'Loading...' : 'Track Click'}
         </button>
-        <button onClick={this.handleClick('async-chuck-norris')}>
-          {loading ? 'Loading...' : 'Call Async Lambda'}
-        </button>
+        <button onClick={this.createHandleClickAddUrls()}>{loading ? 'Loading...' : 'Add Urls'}</button>
         <br />
         <span>{msg}</span>
       </p>
