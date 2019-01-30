@@ -2,7 +2,7 @@ import Airtable from 'airtable';
 import dotenv from 'dotenv';
 
 dotenv.config({
-  path: `.env.local`
+  path: `.env`
 });
 
 const base = new Airtable({ apiKey: process.env.AIRTABLE_API }).base(process.env.AIRTABLE_APPID);
