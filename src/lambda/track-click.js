@@ -8,7 +8,7 @@ dotenv.config({
 const base = new Airtable({ apiKey: process.env.AIRTABLE_API }).base(process.env.AIRTABLE_APPID);
 const urlsTable = base('urls');
 
-const findRecord = (records, fromUrl) => records.find(record => record.get('from') === fromUrl);
+const findRecord = (records, hash) => records.find(record => record.get('from') === hash);
 
 export async function handler(event, context) {
   try {
@@ -16,13 +16,13 @@ export async function handler(event, context) {
       return { statusCode: 410, body: 'Unsupported Request Method' };
     }
     const record = JSON.parse(event.body);
-    if (!record.fromUrl) {
+    if (!record.hash) {
       return { statusCode: 400, body: 'Incomplete request' };
     }
-    const { fromUrl } = record;
+    const { hash } = record;
     let { toUrl } = record;
     const records = await urlsTable.select({}).all();
-    const foundRecord = findRecord(records, fromUrl);
+    const foundRecord = findRecord(records, hash);
     if (foundRecord) {
       // increment
       urlsTable.update(foundRecord.getId(), {
@@ -32,11 +32,10 @@ export async function handler(event, context) {
     } else {
       // add record
       urlsTable.create({
-        from: fromUrl,
+        from: hash,
         to: toUrl
       });
     }
-    console.log(foundRecord);
     return {
       statusCode: 200,
       body: JSON.stringify({ toUrl })

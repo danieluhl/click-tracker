@@ -1,5 +1,4 @@
 import Airtable from 'airtable';
-import slug from 'unique-slug';
 import dotenv from 'dotenv';
 
 dotenv.config({
@@ -17,26 +16,26 @@ export async function handler(event, context) {
       return { statusCode: 410, body: 'Unsupported Request Method' };
     }
     // body is an array of to - from objects
-    const { newUrls } = JSON.parse(event.body);
-    console.log(newUrls);
-    if (!newUrls.length === 0) {
+    const { records } = JSON.parse(event.body);
+    if (!records.length === 0) {
       return { statusCode: 400, body: 'Incomplete request' };
     }
 
     const tableRecords = await urlsTable.select({}).all();
     const results = [];
-    newUrls.forEach(url => {
-      const foundRecord = findRecordByToUrl(tableRecords, url);
+    records.forEach(({ from, to }) => {
+      const foundRecord = findRecordByToUrl(tableRecords, from);
       if (foundRecord) {
-        console.log(`Record to url already exists: ${url};`);
-      } else {
-        const newRecord = {
-          from: slug(),
-          to: url
-        };
-        results.push(newRecord);
-        urlsTable.create({ ...newRecord });
+        console.log(`Record to url already exists: ${from};`);
       }
+
+      const newRecord = {
+        from,
+        to,
+        count: 0
+      };
+      results.push(newRecord);
+      urlsTable.create({ ...newRecord });
     });
 
     return {
