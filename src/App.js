@@ -19,7 +19,11 @@ const trackClick = async hash => {
 const hash = window.location.pathname.replace('/', '');
 if (hash) {
   trackClick(hash).then(({ toUrl }) => {
-    window.location.href = toUrl;
+    if (toUrl) {
+      window.location.href = toUrl;
+    } else {
+      // todo: error message
+    }
   });
 }
 

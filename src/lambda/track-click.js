@@ -20,7 +20,7 @@ export async function handler(event, context) {
       return { statusCode: 400, body: 'Incomplete request' };
     }
     const { hash } = record;
-    let { toUrl } = record;
+    let toUrl;
     const records = await urlsTable.select({}).all();
     const foundRecord = findRecord(records, hash);
     if (foundRecord) {
@@ -30,11 +30,12 @@ export async function handler(event, context) {
       });
       toUrl = foundRecord.get('to');
     } else {
+      // todo: error here
       // add record
-      urlsTable.create({
-        from: hash,
-        to: toUrl
-      });
+      // urlsTable.create({
+      //   from: hash,
+      //   to: toUrl
+      // });
     }
     return {
       statusCode: 200,
