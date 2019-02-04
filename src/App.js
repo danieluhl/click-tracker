@@ -99,13 +99,22 @@ class URLMaker extends Component {
     return hash ? (
       <h1>Redirecting...</h1>
     ) : (
-      <p>
-        <button onClick={this.handleClickAddUrls}>{loading ? 'Loading...' : 'Add Urls'}</button>
-        <label htmlFor="inputText">Throw a csv list of urls or some html with proper hrefs here</label>
-        <textarea id="inputText" onChange={this.handleListChange} value={this.state.inputText} />
-        <br />
+      <div className="wrapper">
+        <form className="pure-form pure-form-stacked">
+          <label htmlFor="inputText">
+            <textarea
+              class="urlInput"
+              id="inputText"
+              onChange={this.handleListChange}
+              value={this.state.inputText}
+            />Throw a csv list of urls or some html with proper hrefs here
+          </label>
+          <button className="pure-button pure-button-primary" onClick={this.handleClickAddUrls}>
+            {loading ? 'Loading...' : 'Add Urls'}
+          </button>
+        </form>
         <span>{msg}</span>
-      </p>
+      </div>
     );
   }
 }

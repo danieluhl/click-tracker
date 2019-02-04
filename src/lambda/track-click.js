@@ -29,13 +29,6 @@ export async function handler(event, context) {
         count: foundRecord.get('count') + 1
       });
       toUrl = foundRecord.get('to');
-    } else {
-      // todo: error here
-      // add record
-      // urlsTable.create({
-      //   from: hash,
-      //   to: toUrl
-      // });
     }
     return {
       statusCode: 200,
