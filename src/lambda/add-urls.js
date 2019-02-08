@@ -26,27 +26,32 @@ export async function handler(event, context) {
     }
 
     const tableRecords = await urlsTable.select({}).all();
-    const results = [];
-    const createPromises = [];
-    records.forEach(({ from, to }) => {
-      const foundRecord = findRecordByToUrl(tableRecords, from);
-      if (foundRecord) {
-        console.log(`Record to url already exists: ${from};`);
-      }
+    const { newRecords, promises } = records.reduce(
+      ({ promises, newRecords }, { from, to }) => {
+        const foundRecord = findRecordByToUrl(tableRecords, from);
+        if (foundRecord) {
+          console.log(`Record to url already exists: ${from};`);
+        }
 
-      const newRecord = {
-        from,
-        to,
-        count: 0
-      };
-      results.push(newRecord);
-      createPromises.push(urlsTable.create({ ...newRecord }));
-    });
-    await Promise.all(createPromises);
+        const newRecord = {
+          from,
+          to,
+          count: 0
+        };
+        return {
+          newRecords: [...newRecords, newRecord],
+          promises: [...promises, urlsTable.create({ ...newRecord })]
+        };
+      },
+      { newRecords: [], promises: [] }
+    );
+
+    // gotta wait to take care of business before moving on
+    await Promise.all(promises);
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ ...results })
+      body: JSON.stringify({ results: [...newRecords] })
     };
   } catch (err) {
     console.log(err); // output to netlify function log
