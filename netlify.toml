@@ -2,3 +2,10 @@
   command = "yarn build"
   functions = "lambda"
   publish = "build"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = true # COMMENT: ensure that we always redirect
+
