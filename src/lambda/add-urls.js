@@ -39,7 +39,13 @@ export async function handler(event, context) {
         count: 0
       };
       results.push(newRecord);
-      urlsTable.create({ ...newRecord });
+      urlsTable.create({ ...newRecord }, (err, record) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        console.log(record.getId());
+      });
     });
 
     return {
