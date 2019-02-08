@@ -16,17 +16,13 @@ const trackClick = async hash => {
   return url;
 };
 
-const hash = window.location.pathname.replace('/', '');
-let hasValidHash = false;
-if (hash && !hash.includes('index')) {
-  hasValidHash = true;
+const hash = window.location.search.replace('?hash=', '');
+if (hash) {
   trackClick(hash).then(({ toUrl }) => {
     if (toUrl) {
       window.location.href = toUrl;
-      hasValidHash = true;
     } else {
-      // todo: error message
-      hasValidHash = false;
+      // todo: call this from the class so we can show an error
     }
   });
 }
@@ -100,7 +96,7 @@ class URLMaker extends Component {
   render() {
     const { loading, msg } = this.state;
 
-    return hasValidHash ? (
+    return hash ? (
       <h1>Redirecting...</h1>
     ) : (
       <div className="wrapper">
