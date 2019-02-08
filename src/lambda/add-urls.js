@@ -5,6 +5,10 @@ dotenv.config({
   path: `.env`
 });
 
+if (!process.env.AIRTABLE_API || !process.env.AIRTABLE_APPID) {
+  throw new Error('Missing airtable environment variables (.env file): AIRTABLE_API, AIRTABLE_APPID');
+}
+
 const base = new Airtable({ apiKey: process.env.AIRTABLE_API }).base(process.env.AIRTABLE_APPID);
 const urlsTable = base('urls');
 
