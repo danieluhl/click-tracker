@@ -1,3 +1,4 @@
 https://clktrk.netlify.com/* https://clktrk.netlify.com/?hash=:hash
+/home /
 /* /index.html?:splat 200
 /:hash /index.html?hash=:hash
