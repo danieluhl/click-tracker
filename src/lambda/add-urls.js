@@ -27,6 +27,7 @@ export async function handler(event, context) {
 
     const tableRecords = await urlsTable.select({}).all();
     const results = [];
+    const createPromises = [];
     records.forEach(({ from, to }) => {
       const foundRecord = findRecordByToUrl(tableRecords, from);
       if (foundRecord) {
@@ -39,14 +40,9 @@ export async function handler(event, context) {
         count: 0
       };
       results.push(newRecord);
-      urlsTable.create({ ...newRecord }, (err, record) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-        console.log(record.getId());
-      });
+      createPromises.push(urlsTable.create({ ...newRecord }));
     });
+    await Promise.all(createPromises);
 
     return {
       statusCode: 200,

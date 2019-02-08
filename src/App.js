@@ -60,11 +60,9 @@ class URLMaker extends Component {
         return response.json();
       })
       .then(json => {
-        console.log(json.results);
-        this.setState({ loading: false, newUrls: json.results });
+        this.setState({ loading: false });
         if (json.results) {
-          console.log('calling again');
-          this.callAddUrls(ENDPOINTS.addUrls, { records: [] });
+          this.setState({ newUrls: json.results });
         }
       });
   };
