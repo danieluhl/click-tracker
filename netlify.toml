@@ -3,6 +3,11 @@
   functions = "lambda"
   publish = "build"
 
+
+[[redirects]]
+  from = "/:hash"
+  to = "/index.html?hash=:hash"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
