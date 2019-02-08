@@ -16,13 +16,13 @@ const trackClick = async hash => {
   return url;
 };
 
-const hash = window.location.search.replace('?hash=', '');
+const hash = window.location.pathname.replace('/', '');
 if (hash) {
   trackClick(hash).then(({ toUrl }) => {
     if (toUrl) {
       window.location.href = toUrl;
     } else {
-      // todo: call this from the class so we can show an error
+      // todo: error message
     }
   });
 }

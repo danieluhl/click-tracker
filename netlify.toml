@@ -5,8 +5,6 @@
 
 
 [[redirects]]
-  from = "/:hash"
-  to = "/index.html?hash=:hash"
-
-
-
+  from = "/*"
+  to = "/index.html"
+  status = 200
