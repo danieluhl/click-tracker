@@ -47,7 +47,7 @@ const replaceUrls = text => {
 class URLMaker extends Component {
   constructor(props) {
     super(props);
-    this.state = { loading: false, msg: null, inputText: '' };
+    this.state = { loading: false, msg: null, inputText: '', newUrls: [] };
   }
 
   createHandleClick = (api, data) => e => {
@@ -61,7 +61,10 @@ class URLMaker extends Component {
       .then(response => {
         return response.json();
       })
-      .then(json => this.setState({ loading: false, msg: json.toUrl }));
+      .then(json => {
+        console.log(json.results);
+        this.setState({ loading: false, newUrls: json.results });
+      });
   };
 
   handleClickAddUrls = e => {
@@ -94,7 +97,7 @@ class URLMaker extends Component {
   };
 
   render() {
-    const { loading, msg } = this.state;
+    const { loading, msg, newUrls } = this.state;
 
     return hash ? (
       <h1>Redirecting...</h1>
@@ -114,6 +117,16 @@ class URLMaker extends Component {
           </button>
         </form>
         <span>{msg}</span>
+        {newUrls && (
+          <dl>
+            {newUrls.map(({ to, from }) => (
+              <React.Fragment>
+                <dd>{to}</dd>
+                <dt>{`${window.location.origin}/${from}`}</dt>
+              </React.Fragment>
+            ))}
+          </dl>
+        )}
       </div>
     );
   }
