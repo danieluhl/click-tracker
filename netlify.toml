@@ -8,9 +8,5 @@
   from = "/:hash"
   to = "/index.html?hash=:hash"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  force = true # COMMENT: ensure that we always redirect
+
 
