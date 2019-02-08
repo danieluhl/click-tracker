@@ -50,9 +50,7 @@ class URLMaker extends Component {
     this.state = { loading: false, msg: null, inputText: '', newUrls: [] };
   }
 
-  createHandleClick = (api, data) => e => {
-    e.preventDefault();
-
+  callAddUrls = (api, data) => {
     this.setState({ loading: true });
     fetch(`/.netlify/functions/${api}`, {
       method: 'POST',
@@ -68,7 +66,11 @@ class URLMaker extends Component {
   };
 
   handleClickAddUrls = e => {
+    e.preventDefault();
     const { inputText } = this.state;
+    if (!inputText) {
+      return;
+    }
     let records = [];
     if (isCSV(inputText)) {
       // if it's a csv just split them all up
@@ -87,7 +89,7 @@ class URLMaker extends Component {
         inputText: result.text
       });
     }
-    this.createHandleClick(ENDPOINTS.addUrls, { records })(e);
+    this.callAddUrls(ENDPOINTS.addUrls, { records });
   };
 
   handleListChange = ({ target: { value } }) => {
