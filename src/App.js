@@ -103,7 +103,7 @@ class URLMaker extends Component {
         <form className="pure-form pure-form-stacked">
           <label htmlFor="inputText">
             <textarea
-              class="urlInput"
+              className="urlInput"
               id="inputText"
               onChange={this.handleListChange}
               value={this.state.inputText}
