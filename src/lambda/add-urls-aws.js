@@ -50,13 +50,7 @@ export async function handler(event, context) {
     const params = buildRequestParams(records, now);
 
     // Call DynamoDB to add the item to the table
-    const result = await ddb.batchWriteItem(params, (err, data) => {
-      if (err) {
-        throw new Error(`AWS error: ${err}`);
-      } else {
-        console.log('Success', data);
-      }
-    });
+    const result = await ddb.batchWriteItem(params).promise();
 
     console.log({ result });
 
