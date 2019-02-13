@@ -3,14 +3,14 @@ import './App.css';
 import slug from 'unique-slug';
 
 const ENDPOINTS = {
-  addUrls: 'add-urls',
-  trackClick: 'track-click'
+  addUrls: 'add-urls-aws',
+  trackClick: 'track-click-aws'
 };
 
 const trackClick = async hash => {
   const response = await fetch(`/.netlify/functions/${ENDPOINTS.trackClick}`, {
     method: 'POST',
-    body: JSON.stringify({ hash: hash })
+    body: JSON.stringify({ hash })
   });
   const url = response.json();
   return url;
@@ -18,9 +18,9 @@ const trackClick = async hash => {
 
 const hash = window.location.pathname.replace('/', '');
 if (hash) {
-  trackClick(hash).then(({ toUrl }) => {
-    if (toUrl) {
-      window.location.href = toUrl;
+  trackClick(hash).then(({ url }) => {
+    if (url) {
+      window.location.href = url;
     } else {
       // todo: error message
     }
@@ -34,12 +34,12 @@ const URL_REGEX = new RegExp(/(?:href=")(.+?)(?:")/g);
 const replaceUrls = text => {
   const records = [];
   text = text.replace(URL_REGEX, (match, url) => {
-    const from = slug();
+    const hash = slug();
     records.push({
-      to: url,
-      from
+      url,
+      hash
     });
-    return match.replace(url, `${window.location.origin}/${from}`);
+    return match.replace(url, `${window.location.origin}/${hash}`);
   });
   return { text, records };
 };
@@ -79,8 +79,8 @@ class URLMaker extends Component {
       const newUrls = inputText.split(/\s*,\s*/);
       newUrls.forEach(url =>
         records.push({
-          to: url,
-          from: slug()
+          url,
+          hash: slug()
         })
       );
     } else {
@@ -123,10 +123,10 @@ class URLMaker extends Component {
         <span>{msg}</span>
         {newUrls && (
           <dl>
-            {newUrls.map(({ to, from }) => (
+            {newUrls.map(({ url, hash }) => (
               <React.Fragment>
-                <dd>{to}</dd>
-                <dt>{`${window.location.origin}/${from}`}</dt>
+                <dd>{url}</dd>
+                <dt>{`${window.location.origin}/${hash}`}</dt>
               </React.Fragment>
             ))}
           </dl>
