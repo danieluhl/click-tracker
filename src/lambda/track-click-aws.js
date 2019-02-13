@@ -6,12 +6,16 @@ dotenv.config({
   path: `.env`
 });
 
-if (!process.env.AWS_SECRET_ACCESS_KEY || !process.env.AWS_ACCESS_KEY_ID) {
+if (!process.env.AWS_SECRET_ACCESS_KEY_LOCAL || !process.env.AWS_ACCESS_KEY_ID_LOCAL) {
   throw new Error('Missing aws environment variables (.env file): AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID');
 }
 
 // set the region
-AWS.config.update({ region: 'us-east-1' });
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID_LOCAL,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY_LOCAL,
+  region: 'us-east-1'
+});
 // get database
 const ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
 const CLICKS_TABLE = 'clicks';
