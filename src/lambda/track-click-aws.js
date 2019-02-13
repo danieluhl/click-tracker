@@ -7,7 +7,9 @@ dotenv.config({
 });
 
 if (!process.env.AWS_SECRET_ACCESS_KEY_LOCAL || !process.env.AWS_ACCESS_KEY_ID_LOCAL) {
-  throw new Error('Missing aws environment variables (.env file): AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID');
+  throw new Error(
+    'Missing aws environment variables (.env file): AWS_SECRET_ACCESS_KEY_LOCAL, AWS_ACCESS_KEY_ID_LOCAL'
+  );
 }
 
 // set the region
