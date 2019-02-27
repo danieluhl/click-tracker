@@ -35,6 +35,18 @@ const buildRequestParams = (records, date) => ({
   }
 });
 
+const insertItems = (db, params) => {
+  return new Promise((res, rej) => {
+    db.batchWriteItem(params, (err, data) => {
+      if (err) {
+        console.log('Error', err);
+      } else {
+        console.log('Success', data);
+      }
+    });
+  });
+};
+
 export async function handler(event, context) {
   try {
     if (event.httpMethod !== 'POST' || !event.body) {
@@ -47,10 +59,19 @@ export async function handler(event, context) {
     }
     const now = Date.now().toString();
 
-    const params = buildRequestParams(records, now);
+    // const params = buildRequestParams(records, now);
+    const { hash, url } = records[0];
+    const params = {
+      TableName: URLS_TABLE,
+      Item: {
+        hash: { S: hash },
+        url: { S: url },
+        date: { S: now }
+      }
+    };
 
     // Call DynamoDB to add the item to the table
-    const result = await ddb.batchWriteItem(params).promise();
+    const result = await ddb.putItem(params).promise();
 
     console.log({ result });
 
