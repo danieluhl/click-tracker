@@ -6,6 +6,7 @@
     "airtable": "^0.5.8",
     "aws-sdk": "^2.401.0",
     "dotenv": "^6.2.0",
+    "dynamoose": "^1.6.4",
     "node-fetch": "^2.3.0",
     "purecss": "^1.0.0",
     "react": "^16.8.0-alpha.0",

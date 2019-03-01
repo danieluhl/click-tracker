@@ -61,8 +61,12 @@ class URLMaker extends Component {
       })
       .then(json => {
         this.setState({ loading: false });
+        console.log(json);
         if (json.results) {
           this.setState({ newUrls: json.results });
+        }
+        if (json.msg) {
+          this.setState({ msg: json.msg });
         }
       });
   };
@@ -79,8 +83,7 @@ class URLMaker extends Component {
       const newUrls = inputText.split(/\s*,\s*/);
       newUrls.forEach(url =>
         records.push({
-          url,
-          hash: slug()
+          url
         })
       );
     } else {
@@ -124,9 +127,9 @@ class URLMaker extends Component {
         {newUrls && (
           <dl>
             {newUrls.map(({ url, hash }) => (
-              <React.Fragment>
-                <dd>{url}</dd>
-                <dt>{`${window.location.origin}/${hash}`}</dt>
+              <React.Fragment key={hash}>
+                <dd key={url}>{url}</dd>
+                <dt key={hash}>{`${window.location.origin}/${hash}`}</dt>
               </React.Fragment>
             ))}
           </dl>

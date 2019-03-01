@@ -1,5 +1,8 @@
 import AWS from 'aws-sdk';
 import dotenv from 'dotenv';
+import dynamoose from 'dynamoose';
+import slug from 'unique-slug';
+import makeHandler from '../async-lambda-handler-maker';
 
 dotenv.config({
   path: `.env`
@@ -35,55 +38,49 @@ const buildRequestParams = (records, date) => ({
   }
 });
 
-const insertItems = (db, params) => {
-  return new Promise((res, rej) => {
-    db.batchWriteItem(params, (err, data) => {
-      if (err) {
-        console.log('Error', err);
-      } else {
-        console.log('Success', data);
-      }
-    });
-  });
-};
+// DYNAMOOSE
+dynamoose.AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID_LOCAL,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY_LOCAL,
+  region: 'us-east-1'
+});
 
-export async function handler(event, context) {
-  try {
-    if (event.httpMethod !== 'POST' || !event.body) {
-      return { statusCode: 410, body: 'Unsupported Request Method' };
-    }
-    // body is an array of to - from objects
-    const { records } = JSON.parse(event.body);
-    if (!records.length === 0) {
-      return { statusCode: 400, body: 'Incomplete request' };
-    }
-    const now = Date.now().toString();
+const UrlsTable = dynamoose.model(URLS_TABLE, {
+  hash: String,
+  url: String,
+  date: String
+});
 
-    // const params = buildRequestParams(records, now);
-    const { hash, url } = records[0];
-    const params = {
-      TableName: URLS_TABLE,
-      Item: {
-        hash: { S: hash },
-        url: { S: url },
-        date: { S: now }
-      }
-    };
-
-    // Call DynamoDB to add the item to the table
-    const result = await ddb.putItem(params).promise();
-
-    console.log({ result });
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ results: [] })
-    };
-  } catch (err) {
-    console.log(err); // output to netlify function log
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ msg: err.message }) // Could be a custom message or object i.e. JSON.stringify(err)
-    };
+export const handler = makeHandler(async function(event, context) {
+  if (event.httpMethod !== 'POST' || !event.body) {
+    return { statusCode: 410, body: JSON.stringify({ msg: 'Unsupported Request Method' }) };
   }
-}
+  // body is an array of to - from objects
+  const { records } = JSON.parse(event.body);
+  if (!records.length === 0) {
+    return { statusCode: 400, body: 'Incomplete request' };
+  }
+  const now = Date.now().toString();
+
+  const allRows = await UrlsTable.scan().exec();
+
+  // filter out any existing urls
+  const recordsToSave = records
+    .filter(record => (allRows.count > 0 ? allRows.find(({ url }) => url !== record.url) : true))
+    .map(item => ({
+      ...item,
+      date: now,
+      hash: slug()
+    }));
+
+  const result = await UrlsTable.batchPut(recordsToSave);
+
+  if (Object.keys(result.UnprocessedItems).length > 0) {
+    throw new Error(`There was an issue with the batchPut for items: ${JSON.stringify(recordsToSave)}`);
+  }
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ results: recordsToSave })
+  };
+});
