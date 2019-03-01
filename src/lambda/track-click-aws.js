@@ -52,9 +52,7 @@ export const handler = makeSafeAsyncLambdaHandler(async (event, context) => {
   const click = new ClicksTable({ hash, date: now, id: slug() });
   const insertResult = await click.save();
 
-  if (Object.keys(insertResult.UnprocessedItems).length > 0) {
-    throw new Error(`There was an issue with the put for items ${JSON.stringify(hash)}`);
-  }
+  console.log({ insertResult });
 
   return {
     statusCode: 200,
