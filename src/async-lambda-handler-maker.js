@@ -1,9 +1,12 @@
 export default fn => {
   return (...params) =>
-    fn(...params).catch(err => ({
-      statusCode: 500,
-      body: JSON.stringify({ msg: err.message })
-    }));
+    fn(...params).catch(err => {
+      console.log(err);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ msg: err.message })
+      };
+    });
 };
 
 // export default fn => {
