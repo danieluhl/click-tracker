@@ -9,6 +9,7 @@ export default fn => {
     });
 };
 
+// I guess the above is the same as:
 // export default fn => {
 //   return async (...params) => {
 //     try {
