@@ -38,7 +38,9 @@ export const handler = makeSafeAsyncLambdaHandler(async function(event, context)
 
   // get all rows from the dynamo db
   const allUrls = await UrlsTable.scan().exec();
+  console.log({ allUrls });
   const allClicks = await ClicksTable.scan().exec();
+  console.log({ allClicks });
 
   const urlsHash = allUrls.reduce((acc, { url, date, hash }) => {
     return { ...acc, [hash]: url };
@@ -47,6 +49,7 @@ export const handler = makeSafeAsyncLambdaHandler(async function(event, context)
   const results = allClicks.reduce((acc, { hash, date }) => {
     return [...acc, { hash, url: urlsHash[hash], date }];
   }, []);
+  console.log({ results });
 
   return {
     statusCode: 200,

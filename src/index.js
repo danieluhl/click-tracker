@@ -46,8 +46,8 @@ const routing = (
     <div>
       <Switch>
         <Route path="/stats" component={Page} />
-        <Route path="/" component={Page} />
         <Route path="/:hash" component={Redirect} />
+        <Route path="/" component={Page} />
         <Route component={Page} />
       </Switch>
     </div>
