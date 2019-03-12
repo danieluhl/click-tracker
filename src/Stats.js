@@ -40,7 +40,12 @@ const getClicksByWeek = rawData => {
 export default class Stats extends Component {
   componentWillMount() {
     // grab the data
-    getAllClicksData().then(({ results }) => {
+    getAllClicksData().then(result => {
+      const { results } = result;
+      if (!results) {
+        console.log(`no results, response: `, result);
+        return;
+      }
       this.setState({ raw: results, clicksByWeek: getClicksByWeek(results) });
     });
   }
