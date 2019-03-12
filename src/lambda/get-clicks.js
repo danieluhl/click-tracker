@@ -32,7 +32,7 @@ const ClicksTable = dynamoose.model('clicks', {
 });
 
 export const handler = makeSafeAsyncLambdaHandler(async function(event, context) {
-  if (event.httpMethod !== 'POST' || !event.body) {
+  if (event.httpMethod !== 'POST') {
     return { statusCode: 410, body: JSON.stringify({ msg: 'Unsupported Request Method' }) };
   }
 
