@@ -1,9 +1,12 @@
-import React, { Component } from 'react';
-import { VictoryLine, VictoryChart, VictoryTheme } from 'victory';
+import React, { Component, Fragment } from 'react';
+import { VictoryLabel, VictoryAxis, VictoryPortal, VictoryLine, VictoryChart, VictoryTheme, VictoryBar } from 'victory';
 
 const LINE_CHART_STYLES = {
   data: { stroke: '#c43a31' },
   parent: { border: '1px solid #ccc' }
+};
+const BAR_CHART_STYLES = {
+  labels: { fontSize: '10px' }
 };
 
 const getAllClicksData = async () => {
@@ -22,8 +25,23 @@ const getWeekNumber = timestamp => {
   return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
 };
 
+const getDataByKey = (rawData, key) => {
+  return rawData
+    .reduce((acc, next) => {
+      const foundEntry = acc.find(entry => entry.x === next[key]);
+      if (foundEntry) {
+        foundEntry.y++;
+      } else {
+        acc = [...acc, { x: next[key], y: 1 }];
+      }
+      return acc;
+    }, [])
+    .sort((a, b) => {
+      return a.y - b.y;
+    });
+};
+
 const getClicksByWeek = rawData => {
-  // get clicks by week
   return rawData
     .sort(({ date: d1 }, { date: d2 }) => parseInt(d1, 10) - parseInt(d2, 10))
     .reduce((acc, { hash, date }) => {
@@ -37,6 +55,7 @@ const getClicksByWeek = rawData => {
       return acc;
     }, []);
 };
+
 export default class Stats extends Component {
   componentWillMount() {
     // grab the data
@@ -46,20 +65,40 @@ export default class Stats extends Component {
         console.log(`no results, response: `, result);
         return;
       }
-      this.setState({ raw: results, clicksByWeek: getClicksByWeek(results) });
+      const dataByUrls = getDataByKey(results, 'url');
+      const urls = dataByUrls.map(item => item.x);
+      console.log(urls);
+      this.setState({
+        raw: results,
+        clicksByWeek: getClicksByWeek(results),
+        clicksByUrl: dataByUrls,
+        clicksByUrlLabels: urls
+      });
     });
   }
 
   state = {
     raw: [],
-    clicksByWeek: []
+    clicksByWeek: [],
+    clicksByUrl: []
   };
 
   render() {
     return (
-      <VictoryChart theme={VictoryTheme.material}>
-        <VictoryLine style={LINE_CHART_STYLES} data={this.state.clicksByWeek} />
-      </VictoryChart>
+      <Fragment>
+        <div style={{ width: '50%' }}>
+          <VictoryChart theme={VictoryTheme.material}>
+            <VictoryLine style={LINE_CHART_STYLES} data={this.state.clicksByWeek} />
+          </VictoryChart>
+        </div>
+        <div style={{ width: '100%' }}>
+          <VictoryChart theme={VictoryTheme.material}>
+            <VictoryBar horizontal={true} textAnchor="middle" style={BAR_CHART_STYLES} data={this.state.clicksByUrl} />
+          </VictoryChart>
+        </div>
+      </Fragment>
     );
   }
 }
+
+// labelComponent = {< VictoryLabel verticalAnchor = "middle" textAnchor = "end" lineHeight = "10px" />}
