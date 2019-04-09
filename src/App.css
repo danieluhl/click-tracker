@@ -24,8 +24,16 @@
 
 dd,
 dt {
+  width: 50%;
+  overflow: hidden;
   display: inline-block;
-  margin: 10px;
+  margin: 10px 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+dt {
+  text-align: right;
 }
 
 @keyframes App-logo-spin {

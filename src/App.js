@@ -103,6 +103,17 @@ class URLMaker extends Component {
     });
   };
 
+  handleUrlClick = ({ target }) => {
+    var textArea = document.createElement('textarea');
+    textArea.style.cssText = 'position: absolute; left: -3000px';
+    textArea.value = target.innerText;
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+  };
+
   render() {
     const { loading, msg, newUrls } = this.state;
 
@@ -124,15 +135,19 @@ class URLMaker extends Component {
           </button>
         </form>
         <span>{msg}</span>
-        {newUrls && (
-          <dl>
-            {newUrls.map(({ url, hash }) => (
-              <React.Fragment key={hash}>
-                <dd key={url}>{url}</dd>
-                <dt key={hash}>{`${window.location.origin}/${hash}`}</dt>
-              </React.Fragment>
-            ))}
-          </dl>
+        {newUrls.length > 0 && (
+          <React.Fragment>
+            <hr />
+            <span>Click to COPY to clipboard!</span>
+            <dl>
+              {newUrls.map(({ url, hash }) => (
+                <React.Fragment>
+                  <dd key={url}>{url}</dd>
+                  <dt key={hash} onClick={this.handleUrlClick}>{`${window.location.origin}/${hash}`}</dt>
+                </React.Fragment>
+              ))}
+            </dl>
+          </React.Fragment>
         )}
       </div>
     );
