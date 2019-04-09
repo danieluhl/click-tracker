@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { VictoryLabel, VictoryAxis, VictoryPortal, VictoryLine, VictoryChart, VictoryTheme, VictoryBar } from 'victory';
+import { BarChart, LineChart } from 'reaviz';
 
 const LINE_CHART_STYLES = {
   data: { stroke: '#c43a31' },
@@ -28,16 +28,16 @@ const getWeekNumber = timestamp => {
 const getDataByKey = (rawData, key) => {
   return rawData
     .reduce((acc, next) => {
-      const foundEntry = acc.find(entry => entry.x === next[key]);
+      const foundEntry = acc.find(entry => entry.key === next[key]);
       if (foundEntry) {
-        foundEntry.y++;
+        foundEntry.data++;
       } else {
-        acc = [...acc, { x: next[key], y: 1 }];
+        acc = [...acc, { key: next[key], data: 1 }];
       }
       return acc;
     }, [])
     .sort((a, b) => {
-      return a.y - b.y;
+      return a.data - b.data;
     });
 };
 
@@ -46,11 +46,11 @@ const getClicksByWeek = rawData => {
     .sort(({ date: d1 }, { date: d2 }) => parseInt(d1, 10) - parseInt(d2, 10))
     .reduce((acc, { hash, date }) => {
       const week = getWeekNumber(parseInt(date, 10));
-      const foundEntry = acc.find(entry => entry.x === week);
+      const foundEntry = acc.find(entry => entry.key === week);
       if (foundEntry) {
-        foundEntry.y++;
+        foundEntry.data++;
       } else {
-        acc = [...acc, { x: week, y: 1 }];
+        acc = [...acc, { key: week, data: 1 }];
       }
       return acc;
     }, []);
@@ -66,13 +66,10 @@ export default class Stats extends Component {
         return;
       }
       const dataByUrls = getDataByKey(results, 'url');
-      const urls = dataByUrls.map(item => item.x);
-      console.log(urls);
       this.setState({
         raw: results,
         clicksByWeek: getClicksByWeek(results),
-        clicksByUrl: dataByUrls,
-        clicksByUrlLabels: urls
+        clicksByUrl: dataByUrls
       });
     });
   }
@@ -86,15 +83,11 @@ export default class Stats extends Component {
   render() {
     return (
       <Fragment>
-        <div style={{ width: '50%' }}>
-          <VictoryChart theme={VictoryTheme.material}>
-            <VictoryLine style={LINE_CHART_STYLES} data={this.state.clicksByWeek} />
-          </VictoryChart>
+        <div style={{ width: '80vw', height: '40vh' }}>
+          <LineChart width={1000} height={400} data={this.state.clicksByWeek} />
         </div>
-        <div style={{ width: '100%' }}>
-          <VictoryChart theme={VictoryTheme.material}>
-            <VictoryBar horizontal={true} textAnchor="middle" style={BAR_CHART_STYLES} data={this.state.clicksByUrl} />
-          </VictoryChart>
+        <div style={{ width: '80vw', height: '20vh' }}>
+          <BarChart data={this.state.clicksByUrl} />
         </div>
       </Fragment>
     );
