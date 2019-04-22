@@ -56,6 +56,16 @@ const getClicksByWeek = rawData => {
     }, []);
 };
 
+const getClicksByUrlForWeek = rawData => {
+  const lastWeek = new Date();
+  lastWeek.setDate(lastWeek.getDate() - 7);
+  const lastWeekTimestamp = lastWeek.getTime();
+  const lastWeekClicks = rawData.filter(({ date }) => {
+    return parseInt(date) > lastWeekTimestamp;
+  });
+  return getDataByKey(lastWeekClicks, 'url');
+};
+
 export default class Stats extends Component {
   componentWillMount() {
     // grab the data
@@ -65,11 +75,11 @@ export default class Stats extends Component {
         console.log(`no results, response: `, result);
         return;
       }
-      const dataByUrls = getDataByKey(results, 'url');
       this.setState({
         raw: results,
         clicksByWeek: getClicksByWeek(results),
-        clicksByUrl: dataByUrls
+        clicksByUrl: getDataByKey(results, 'url'),
+        clicksByUrlForWeek: getClicksByUrlForWeek(results)
       });
     });
   }
@@ -82,14 +92,20 @@ export default class Stats extends Component {
 
   render() {
     return (
-      <Fragment>
-        <div style={{ width: '80vw', height: '40vh' }}>
-          <LineChart width={1000} height={400} data={this.state.clicksByWeek} />
+      <div style={{ margin: '0 auto', width: '80vw', padding: '0 0 200px 0' }}>
+        <h2>Clicks by week</h2>
+        <div style={{ height: '40vh' }}>
+          <LineChart data={this.state.clicksByWeek} />
         </div>
-        <div style={{ width: '80vw', height: '20vh' }}>
+        <h2>Last weeks clicks by url</h2>
+        <div style={{ height: '20vh' }}>
+          <BarChart data={this.state.clicksByUrlForWeek} />
+        </div>
+        <h2>All time clicks by url</h2>
+        <div style={{ height: '20vh' }}>
           <BarChart data={this.state.clicksByUrl} />
         </div>
-      </Fragment>
+      </div>
     );
   }
 }
